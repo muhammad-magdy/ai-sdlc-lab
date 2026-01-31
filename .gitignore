@@ -2,5 +2,7 @@ node_modules/
 tasks.json
 sprint-status.json
 .prompt-*.tmp
+coverage/
+.claude/
 .DS_Store
 *.log
