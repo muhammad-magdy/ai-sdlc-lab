@@ -2,6 +2,7 @@ const { addTask } = require('./commands/add');
 const { listTasks } = require('./commands/list');
 const { completeTask } = require('./commands/complete');
 const { deleteTask } = require('./commands/delete');
+const { showHelp } = require('./commands/help');
 
 function main() {
   const args = process.argv.slice(2);
@@ -65,9 +66,14 @@ function main() {
         break;
       }
 
+      case 'help': {
+        showHelp();
+        break;
+      }
+
       default:
         console.error(`Error: Unknown command "${command}"`);
-        console.error('Available commands: add, list, complete, delete');
+        console.error('Available commands: add, list, complete, delete, help');
         process.exit(1);
     }
   } catch (error) {
