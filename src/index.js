@@ -3,6 +3,7 @@ const { listTasks, showListHelp } = require('./commands/list');
 const { completeTask, showCompleteHelp } = require('./commands/complete');
 const { deleteTask, showDeleteHelp } = require('./commands/delete');
 const { editTask, showEditHelp } = require('./commands/edit');
+const { searchTasks, showSearchHelp } = require('./commands/search');
 const { showHelp } = require('./commands/help');
 
 function main() {
@@ -153,6 +154,30 @@ Or use --help with any command: node src/index.js add --help
         break;
       }
 
+      case 'search': {
+        if (args[1] === '--help') {
+          showSearchHelp();
+          break;
+        }
+        const searchKeyword = args.slice(1).join(' ');
+        const searchResult = searchTasks(searchKeyword);
+        if (searchResult.success) {
+          if (searchResult.tasks.length === 0) {
+            console.log(`No tasks found matching "${searchResult.keyword}"`);
+          } else {
+            console.log(`Found ${searchResult.tasks.length} task(s) matching "${searchResult.keyword}":`);
+            searchResult.tasks.forEach(task => {
+              const status = task.completed ? '[✓]' : '[ ]';
+              console.log(`${status} [ID: ${task.id}] ${task.description}`);
+            });
+          }
+        } else {
+          console.error(`Error: ${searchResult.error}`);
+          process.exit(1);
+        }
+        break;
+      }
+
       case 'help': {
         showHelp();
         break;
@@ -160,7 +185,7 @@ Or use --help with any command: node src/index.js add --help
 
       default:
         console.error(`Error: Unknown command "${command}"`);
-        console.error('Available commands: add, list, complete, delete, edit, help');
+        console.error('Available commands: add, list, complete, delete, edit, search, help');
         process.exit(1);
     }
   } catch (error) {
