@@ -2,6 +2,7 @@ const { addTask, showAddHelp } = require('./commands/add');
 const { listTasks, showListHelp } = require('./commands/list');
 const { completeTask, showCompleteHelp } = require('./commands/complete');
 const { deleteTask, showDeleteHelp } = require('./commands/delete');
+const { editTask, showEditHelp } = require('./commands/edit');
 const { showHelp } = require('./commands/help');
 
 function main() {
@@ -109,6 +110,33 @@ Or use --help with any command: node src/index.js add --help
         break;
       }
 
+      case 'edit': {
+        if (args[1] === '--help') {
+          showEditHelp();
+          break;
+        }
+        const editTaskId = args[1];
+        const editDescription = args.slice(2).join(' ');
+        if (!editTaskId) {
+          console.error('Error: Task ID is required');
+          process.exit(1);
+        }
+        if (!editDescription) {
+          console.error('Error: New description is required');
+          process.exit(1);
+        }
+        const editResult = editTask(editTaskId, editDescription);
+        if (editResult.success) {
+          console.log(`Task ${editResult.taskId} updated successfully`);
+          console.log(`Old: ${editResult.oldDescription}`);
+          console.log(`New: ${editResult.newDescription}`);
+        } else {
+          console.error(`Error: ${editResult.error}`);
+          process.exit(1);
+        }
+        break;
+      }
+
       case 'help': {
         showHelp();
         break;
@@ -116,7 +144,7 @@ Or use --help with any command: node src/index.js add --help
 
       default:
         console.error(`Error: Unknown command "${command}"`);
-        console.error('Available commands: add, list, complete, delete, help');
+        console.error('Available commands: add, list, complete, delete, edit, help');
         process.exit(1);
     }
   } catch (error) {
