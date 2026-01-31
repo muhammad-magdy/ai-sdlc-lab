@@ -8,6 +8,10 @@ function completeTask(taskId) {
     return { success: false, error: `Task with ID ${taskId} not found` };
   }
 
+  if (task.completed) {
+    return { success: false, error: `Task ${taskId} is already complete`, alreadyComplete: true };
+  }
+
   task.completed = true;
   saveTasks(tasks);
 

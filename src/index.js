@@ -39,8 +39,12 @@ function main() {
         if (result.success) {
           console.log(`Task ${result.taskId} marked as complete`);
         } else {
-          console.error(`Error: ${result.error}`);
-          process.exit(1);
+          if (result.alreadyComplete) {
+            console.log(result.error);
+          } else {
+            console.error(`Error: ${result.error}`);
+            process.exit(1);
+          }
         }
         break;
       }
