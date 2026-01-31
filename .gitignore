@@ -1,5 +1,6 @@
 node_modules/
 tasks.json
 sprint-status.json
+.prompt-*.tmp
 .DS_Store
 *.log

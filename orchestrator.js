@@ -5,7 +5,7 @@
  * Coordinates agent execution for automated sprint workflow
  */
 
-const { spawn } = require('child_process');
+const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -66,31 +66,33 @@ function runAgent(agentType, prompt, description) {
     addLog(`Starting ${agentType} agent: ${description}`);
     updateAgent(agentType, 'running');
 
-    const claude = spawn('claude', ['-a', agentType, '-p', prompt], {
+    // Escape prompt for shell - use temporary file approach
+    const tempFile = path.join(__dirname, `.prompt-${Date.now()}.tmp`);
+    fs.writeFileSync(tempFile, prompt);
+
+    const command = `claude --agent ${agentType} -p "$(cat "${tempFile}")"`;
+
+    exec(command, {
       cwd: __dirname,
+      maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       shell: true
-    });
+    }, (error, stdout, stderr) => {
+      // Clean up temp file
+      try {
+        fs.unlinkSync(tempFile);
+      } catch (e) {
+        // Ignore cleanup errors
+      }
 
-    let output = '';
-    let errorOutput = '';
-
-    claude.stdout.on('data', (data) => {
-      output += data.toString();
-    });
-
-    claude.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-    });
-
-    claude.on('close', (code) => {
-      if (code === 0) {
+      if (error) {
+        addLog(`${agentType} failed: ${error.message}`, 'error');
+        if (stderr) addLog(`stderr: ${stderr}`, 'error');
+        updateAgent(agentType, 'failed');
+        reject(error);
+      } else {
         addLog(`${agentType} completed successfully`, 'success');
         updateAgent(agentType, 'complete');
-        resolve(output);
-      } else {
-        addLog(`${agentType} failed with code ${code}: ${errorOutput}`, 'error');
-        updateAgent(agentType, 'failed');
-        reject(new Error(`Agent failed: ${errorOutput}`));
+        resolve(stdout);
       }
     });
   });
