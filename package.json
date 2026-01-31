@@ -4,7 +4,9 @@
   "description": "A command-line task manager with JSON persistence",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "sprint": "node orchestrator.js",
+    "dashboard": "start dashboard.html"
   },
   "keywords": ["cli", "task-manager", "productivity"],
   "author": "",

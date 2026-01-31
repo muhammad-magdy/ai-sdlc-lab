@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI SDLC Lab - Sprint Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .status-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .status-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .progress-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .agents-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .agents-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .agent-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+        }
+
+        .agent-item.pending {
+            border-left-color: #95a5a6;
+        }
+
+        .agent-item.running {
+            border-left-color: #3498db;
+            background: #e3f2fd;
+        }
+
+        .agent-item.complete {
+            border-left-color: #27ae60;
+            background: #e8f5e9;
+        }
+
+        .agent-item.failed {
+            border-left-color: #e74c3c;
+            background: #ffebee;
+        }
+
+        .agent-name {
+            flex: 1;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .agent-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .agent-status.pending {
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+
+        .agent-status.running {
+            background: #3498db;
+            color: white;
+        }
+
+        .agent-status.complete {
+            background: #27ae60;
+            color: white;
+        }
+
+        .agent-status.failed {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .logs-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logs-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .logs-container {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            color: #e0e0e0;
+            border-bottom: 1px solid #333;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-timestamp {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .log-entry.info {
+            color: #4fc3f7;
+        }
+
+        .log-entry.success {
+            color: #66bb6a;
+        }
+
+        .log-entry.error {
+            color: #ef5350;
+        }
+
+        .refresh-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="refresh-indicator">
+        <span class="spinner"></span>
+        Auto-refreshing...
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI SDLC Lab - Sprint Dashboard</h1>
+            <p class="subtitle">Real-time automated sprint workflow monitoring</p>
+        </div>
+
+        <div id="content">
+            <div class="no-data">
+                <p>⏳ Waiting for sprint data...</p>
+                <p style="margin-top: 10px; font-size: 0.9em;">Run <code>node orchestrator.js</code> to start the automated sprint workflow</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STATUS_FILE = 'sprint-status.json';
+        let lastUpdate = null;
+
+        async function loadStatus() {
+            try {
+                const response = await fetch(STATUS_FILE + '?t=' + Date.now());
+                if (!response.ok) {
+                    throw new Error('Status file not found');
+                }
+                const data = await response.json();
+                renderDashboard(data);
+                lastUpdate = new Date();
+            } catch (error) {
+                console.error('Error loading status:', error);
+                // Keep showing "waiting for data" message
+            }
+        }
+
+        function renderDashboard(status) {
+            const content = document.getElementById('content');
+
+            content.innerHTML = `
+                <div class="status-grid">
+                    <div class="status-card">
+                        <h3>Current Sprint</h3>
+                        <div class="status-value">${status.sprint || 'N/A'}</div>
+                    </div>
+                    <div class="status-card">
+                        <h3>Current Phase</h3>
+                        <div class="status-value">${status.phase || 'Idle'}</div>
+                    </div>
+                    <div class="status-card">
+                        <h3>Progress</h3>
+                        <div class="status-value">${status.progress || 0}%</div>
+                    </div>
+                    <div class="status-card">
+                        <h3>Current Agent</h3>
+                        <div class="status-value">${status.currentAgent || 'None'}</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <h2>Overall Progress</h2>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${status.progress || 0}%">
+                            ${status.progress || 0}%
+                        </div>
+                    </div>
+                    <p style="color: #666; margin-top: 10px;">
+                        Started: ${status.startTime ? new Date(status.startTime).toLocaleString() : 'Not started'}
+                    </p>
+                </div>
+
+                <div class="agents-section">
+                    <h2>Agent Status</h2>
+                    ${renderAgents(status.agents)}
+                </div>
+
+                <div class="logs-section">
+                    <h2>Activity Log</h2>
+                    <div class="logs-container">
+                        ${renderLogs(status.logs)}
+                    </div>
+                </div>
+            `;
+
+            // Auto-scroll logs to bottom
+            const logsContainer = document.querySelector('.logs-container');
+            if (logsContainer) {
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
+        }
+
+        function renderAgents(agents) {
+            if (!agents) return '<p>No agent data available</p>';
+
+            const agentNames = {
+                'project-manager': 'Project Manager',
+                'scrum-master': 'Scrum Master',
+                'developer': 'Developer',
+                'tester': 'QA Tester'
+            };
+
+            return Object.entries(agents).map(([key, agent]) => `
+                <div class="agent-item ${agent.status}">
+                    <div class="agent-name">${agentNames[key] || key}</div>
+                    <div class="agent-status ${agent.status}">${agent.status}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderLogs(logs) {
+            if (!logs || logs.length === 0) {
+                return '<div style="color: #888;">No logs yet...</div>';
+            }
+
+            return logs.map(log => {
+                const time = new Date(log.timestamp).toLocaleTimeString();
+                return `
+                    <div class="log-entry ${log.level}">
+                        <span class="log-timestamp">[${time}]</span>
+                        <span class="log-message">${log.message}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load status immediately and then every 2 seconds
+        loadStatus();
+        setInterval(loadStatus, 2000);
+    </script>
+</body>
+</html>
