@@ -8,6 +8,33 @@ function main() {
   const args = process.argv.slice(2);
   const command = args[0];
 
+  if (!command) {
+    console.log(`
+CLI Task Manager
+
+Usage: node src/index.js <command> [arguments]
+
+Available commands:
+  add        Add a new task
+  list       List all tasks
+  complete   Mark a task as complete
+  delete     Delete a task
+  edit       Edit a task description
+  search     Search for tasks by keyword
+  help       Show detailed help for all commands
+
+Examples:
+  node src/index.js add Buy groceries
+  node src/index.js list
+  node src/index.js complete 1
+  node src/index.js delete 2
+
+For more information, run: node src/index.js help
+Or use --help with any command: node src/index.js add --help
+`);
+    process.exit(0);
+  }
+
   try {
     switch (command) {
       case 'add': {
