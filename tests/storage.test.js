@@ -170,11 +170,14 @@ describe('Storage Module', () => {
         { id: 1, description: 'Task with "quotes" and newlines\n', completed: false }
       ];
 
+      fs.writeFileSync.mockImplementation(() => {});
+
       saveTasks(mockTasks);
 
       expect(fs.writeFileSync).toHaveBeenCalled();
       const savedData = fs.writeFileSync.mock.calls[0][1];
-      expect(savedData).toContain('Task with "quotes" and newlines');
+      const parsedData = JSON.parse(savedData);
+      expect(parsedData[0].description).toBe('Task with "quotes" and newlines\n');
     });
 
     test('should handle permission errors', () => {
@@ -208,6 +211,8 @@ describe('Storage Module', () => {
         }
       ];
 
+      fs.writeFileSync.mockImplementation(() => {});
+
       saveTasks(mockTasks);
 
       const savedData = fs.writeFileSync.mock.calls[0][1];
@@ -224,6 +229,8 @@ describe('Storage Module', () => {
         { id: 2, description: 'Task 2', completed: true },
         { id: 3, description: 'Task 3', completed: false }
       ];
+
+      fs.writeFileSync.mockImplementation(() => {});
 
       // Save tasks
       saveTasks(mockTasks);
