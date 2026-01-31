@@ -1,7 +1,7 @@
-const { addTask } = require('./commands/add');
-const { listTasks } = require('./commands/list');
-const { completeTask } = require('./commands/complete');
-const { deleteTask } = require('./commands/delete');
+const { addTask, showAddHelp } = require('./commands/add');
+const { listTasks, showListHelp } = require('./commands/list');
+const { completeTask, showCompleteHelp } = require('./commands/complete');
+const { deleteTask, showDeleteHelp } = require('./commands/delete');
 const { showHelp } = require('./commands/help');
 
 function main() {
@@ -11,6 +11,10 @@ function main() {
   try {
     switch (command) {
       case 'add': {
+        if (args[1] === '--help') {
+          showAddHelp();
+          break;
+        }
         const description = args.slice(1).join(' ');
         const task = addTask(description);
         console.log(`Task added successfully! [ID: ${task.id}] ${task.description}`);
@@ -18,6 +22,10 @@ function main() {
       }
 
       case 'list': {
+        if (args[1] === '--help') {
+          showListHelp();
+          break;
+        }
         const tasks = listTasks();
         if (tasks.length === 0) {
           console.log('No tasks found');
@@ -31,6 +39,10 @@ function main() {
       }
 
       case 'complete': {
+        if (args[1] === '--help') {
+          showCompleteHelp();
+          break;
+        }
         const taskId = args[1];
         if (!taskId) {
           console.error('Error: Task ID is required');
@@ -51,6 +63,10 @@ function main() {
       }
 
       case 'delete': {
+        if (args[1] === '--help') {
+          showDeleteHelp();
+          break;
+        }
         const taskId = args[1];
         if (!taskId) {
           console.error('Error: Task ID is required');
