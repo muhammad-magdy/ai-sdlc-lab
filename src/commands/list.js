@@ -1,7 +1,14 @@
 const { loadTasks } = require('../storage/storage');
 
-function listTasks() {
+function listTasks(filter = null) {
   const tasks = loadTasks();
+
+  if (filter === 'complete') {
+    return tasks.filter(task => task.completed);
+  } else if (filter === 'incomplete') {
+    return tasks.filter(task => !task.completed);
+  }
+
   return tasks;
 }
 

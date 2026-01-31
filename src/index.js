@@ -54,9 +54,25 @@ Or use --help with any command: node src/index.js add --help
           showListHelp();
           break;
         }
-        const tasks = listTasks();
+        let filter = null;
+        if (args[1] === '--complete') {
+          filter = 'complete';
+        } else if (args[1] === '--incomplete') {
+          filter = 'incomplete';
+        } else if (args[1] && args[1].startsWith('--')) {
+          console.error(`Error: Unknown filter "${args[1]}"`);
+          console.error('Available filters: --complete, --incomplete');
+          process.exit(1);
+        }
+        const tasks = listTasks(filter);
         if (tasks.length === 0) {
-          console.log('No tasks found');
+          if (filter === 'complete') {
+            console.log('No completed tasks found');
+          } else if (filter === 'incomplete') {
+            console.log('No incomplete tasks found');
+          } else {
+            console.log('No tasks found');
+          }
         } else {
           tasks.forEach(task => {
             const status = task.completed ? '[✓]' : '[ ]';
