@@ -3,6 +3,6 @@ tasks.json
 sprint-status.json
 .prompt-*.tmp
 coverage/
-.claude/
+.claude/settings.local.json
 .DS_Store
 *.log
